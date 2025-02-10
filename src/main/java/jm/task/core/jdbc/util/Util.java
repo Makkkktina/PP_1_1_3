@@ -1,10 +1,19 @@
 package jm.task.core.jdbc.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Util {
+
+    private Util () {
+
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(Util.class);
 
     private static final String URL = "jdbc:mysql://localhost:3306/mybdtest";
     private static final String USER = "root";
@@ -14,9 +23,9 @@ public class Util {
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Соединение с БД успешно установлено!");
+            logger.info("Соединение с БД успешно установлено!");
         } catch (SQLException e) {
-            System.err.println("Ошибка при подключении к БД: " + e.getMessage());
+            logger.info("Ошибка при подключении к БД: ");
         }
         return connection;
     }

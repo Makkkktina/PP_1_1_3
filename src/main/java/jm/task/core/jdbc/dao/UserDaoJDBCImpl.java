@@ -1,22 +1,25 @@
 package jm.task.core.jdbc.dao;
+
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
+
 import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class UserDaoJDBCImpl implements UserDao {
 
-    public UserDaoJDBCImpl() {
-    }
+    Logger logger = Logger.getLogger(getClass().getName());
+
 
     public void createUsersTable() {
         try (Connection connection = Util.connect();
              Statement preparedstatment = connection.createStatement()) {
             preparedstatment.executeUpdate("CREATE TABLE IF NOT EXISTS users (id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100), lastname VARCHAR(50), age INT)");
-            System.out.println("Table created");
+            logger.info("Table created");
         } catch (SQLException e) {
-            System.out.println("Table not created");
+            logger.info("Table not created");
         }
 
     }
@@ -24,10 +27,10 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void dropUsersTable() {
         try (Connection connection = Util.connect();
-             Statement preparedstatment = connection.createStatement()){
+             Statement preparedstatment = connection.createStatement()) {
             preparedstatment.executeUpdate("DROP TABLE IF EXISTS users");
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.info("Table not dropped");
         }
 
     }
@@ -40,7 +43,7 @@ public class UserDaoJDBCImpl implements UserDao {
             preparedStatement.setByte(3, age);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.info("User not saved");
         }
     }
 
@@ -50,7 +53,7 @@ public class UserDaoJDBCImpl implements UserDao {
             prepStat.setLong(1, id);
             prepStat.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.info("User not removed");
 
         }
     }
@@ -59,7 +62,7 @@ public class UserDaoJDBCImpl implements UserDao {
         List<User> userList = new LinkedList<>();
         try (Connection connection = Util.connect();
              Statement preparedstatment = connection.createStatement();
-             ResultSet resultSet = preparedstatment.executeQuery("SELECT * FROM users")) {
+             ResultSet resultSet = preparedstatment.executeQuery("SELECT * " + " FROM users")) {
             while (resultSet.next()) {
                 User user = new User();
                 user.setId(resultSet.getLong("id"));
@@ -69,11 +72,10 @@ public class UserDaoJDBCImpl implements UserDao {
                 userList.add(user);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.info("User not loaded");
         }
         return userList;
     }
-
 
 
     public void cleanUsersTable() {
@@ -81,7 +83,7 @@ public class UserDaoJDBCImpl implements UserDao {
              Statement preparedstatment = connection.createStatement()) {
             preparedstatment.executeUpdate("TRUNCATE users");
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.info("Table not cleaned");
         }
     }
 
